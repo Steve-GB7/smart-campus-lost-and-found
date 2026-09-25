@@ -1,0 +1,21 @@
+# Build output
+out/
+bin/
+*.class
+
+# Package files
+*.jar
+*.war
+!lib/mysql-connector-*.jar
+
+# IDE specific
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS files
+.DS_Store
+Thumbs.db

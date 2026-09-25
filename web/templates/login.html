@@ -1,0 +1,43 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <span class="brand-tile">CEC HELPDESK</span>
+      <h2>Sign In</h2>
+      <p class="page-subtitle">College of Engineering Chengannur</p>
+    </div>
+
+    <form method="POST" action="/login">
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        <div class="terminal-input-wrapper">
+          <span class="terminal-prefix">&gt;</span>
+          <input type="text" id="username" name="username" class="form-input terminal-input" placeholder="e.g. admin or roll number" required autofocus>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="terminal-input-wrapper">
+          <span class="terminal-prefix">&gt;</span>
+          <input type="password" id="password" name="password" class="form-input terminal-input" placeholder="••••••••" required>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <button type="submit" class="btn btn-primary" style="width:100%;">Authenticate &rarr;</button>
+      </div>
+    </form>
+
+    <div class="auth-footer">
+      <span>Don't have an account?</span>
+      <a href="/register" style="margin-left:4px;">Register new profile</a>
+    </div>
+
+    <div style="margin-top:20px; padding:12px; background:var(--color-linen); border-radius:var(--radius-default); border:var(--border-hairline);">
+      <div class="mono" style="font-size:11px; text-transform:uppercase; color:var(--color-ash); margin-bottom:4px;">Default Credentials</div>
+      <div class="mono" style="font-size:12px; color:var(--color-driftwood);">
+        admin / admin123
+      </div>
+    </div>
+  </div>
+</div>

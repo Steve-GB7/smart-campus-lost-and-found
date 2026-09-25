@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{pageTitle}} — CEC Campus Helpdesk</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header class="top-nav">
+    <a href="/feed" class="nav-brand">
+      <span class="brand-tile">CEC</span>
+      <span class="brand-title">Campus Helpdesk</span>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/feed" class="nav-link {{activeFeed}}">Lost &amp; Found</a></li>
+        <li><a href="/tickets" class="nav-link {{activeTickets}}">Grievance Tickets</a></li>
+        <li><a href="/messages" class="nav-link {{activeMessages}}">Messages</a></li>
+        {{userNav}}
+      </ul>
+    </nav>
+  </header>
+  <main class="main-wrapper">
+    {{flashHtml}}

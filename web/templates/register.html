@@ -1,0 +1,82 @@
+<div class="auth-container">
+  <div class="auth-card" style="max-width: 480px;">
+    <div class="auth-header">
+      <span class="brand-tile">CEC REGISTRATION</span>
+      <h2>Create Account</h2>
+      <p class="page-subtitle">Join the Smart Campus Helpdesk Network</p>
+    </div>
+
+    <form method="POST" action="/register">
+      <div class="form-group">
+        <label class="form-label" for="role">Campus Role</label>
+        <select id="role" name="role" class="form-select mono" onchange="toggleDept(this.value)" required>
+          <option value="STUDENT" selected>Student</option>
+          <option value="STAFF">Staff / Department Member</option>
+          <option value="ADMIN">System Administrator</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="deptGroup" style="display:none;">
+        <label class="form-label" for="department">Assigned Department</label>
+        <select id="department" name="department" class="form-select mono">
+          <option value="IT">IT Support</option>
+          <option value="ELECTRICAL">Electrical Maintenance</option>
+          <option value="GENERAL_MAINTENANCE">General Maintenance</option>
+          <option value="Administration">Administration</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="fullName">Full Name</label>
+        <div class="terminal-input-wrapper">
+          <span class="terminal-prefix">&gt;</span>
+          <input type="text" id="fullName" name="fullName" class="form-input terminal-input" placeholder="e.g. Rahul Nair" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        <div class="terminal-input-wrapper">
+          <span class="terminal-prefix">&gt;</span>
+          <input type="text" id="username" name="username" class="form-input terminal-input" placeholder="e.g. rahul_cec" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Campus Email</label>
+        <div class="terminal-input-wrapper">
+          <span class="terminal-prefix">&gt;</span>
+          <input type="email" id="email" name="email" class="form-input terminal-input" placeholder="e.g. rahul@ceconline.edu" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="terminal-input-wrapper">
+          <span class="terminal-prefix">&gt;</span>
+          <input type="password" id="password" name="password" class="form-input terminal-input" placeholder="••••••••" required>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <button type="submit" class="btn btn-primary" style="width:100%;">Create Account &rarr;</button>
+      </div>
+    </form>
+
+    <div class="auth-footer">
+      <span>Already have an account?</span>
+      <a href="/login" style="margin-left:4px;">Sign in here</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleDept(role) {
+    const deptGroup = document.getElementById('deptGroup');
+    if (role === 'STAFF') {
+      deptGroup.style.display = 'block';
+    } else {
+      deptGroup.style.display = 'none';
+    }
+  }
+</script>

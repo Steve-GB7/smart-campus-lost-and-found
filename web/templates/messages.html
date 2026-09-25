@@ -1,0 +1,54 @@
+<div class="page-header">
+  <div>
+    <div class="mono" style="font-size:12px; color:var(--color-driftwood); text-transform:uppercase; margin-bottom:4px;">Direct Communication</div>
+    <h1>Private Messages</h1>
+    <p class="page-subtitle">Coordinate returns and follow-ups securely with notice authors.</p>
+  </div>
+</div>
+
+<div class="messaging-layout">
+  <!-- Thread sidebar -->
+  <aside class="thread-list">
+    <div style="padding:16px; border-bottom:var(--border-hairline); background-color:var(--color-linen);">
+      <span class="mono" style="font-size:11px; text-transform:uppercase; color:var(--color-ash); font-weight:500;">Inbox Conversations</span>
+    </div>
+    <div>
+      {{threadListHtml}}
+    </div>
+  </aside>
+
+  <!-- Active conversation pane -->
+  <section class="chat-pane">
+    <div class="chat-header">
+      <div>
+        <h4 style="margin:0; font-size:16px;">{{activeChatTitle}}</h4>
+        <span class="mono" style="font-size:12px; color:var(--color-driftwood);">{{activeChatSubtitle}}</span>
+      </div>
+      <div>
+        {{activeChatBadge}}
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      {{chatMessagesHtml}}
+    </div>
+
+    <form method="POST" action="/messages/send" class="chat-composer">
+      <input type="hidden" name="postId" value="{{activePostId}}">
+      <input type="hidden" name="receiverId" value="{{activeReceiverId}}">
+      <div class="terminal-input-wrapper" style="flex:1;">
+        <span class="terminal-prefix">&gt;</span>
+        <input type="text" name="content" class="form-input terminal-input" placeholder="Type your message..." required autocomplete="off" {{inputDisabled}}>
+      </div>
+      <button type="submit" class="btn btn-amber" {{buttonDisabled}}>Send &rarr;</button>
+    </form>
+  </section>
+</div>
+
+<script>
+  // Scroll chat messages to bottom
+  const chatDiv = document.getElementById('chatMessages');
+  if (chatDiv) {
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+  }
+</script>

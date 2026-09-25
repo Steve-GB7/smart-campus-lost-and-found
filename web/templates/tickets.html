@@ -1,0 +1,74 @@
+<div class="page-header">
+  <div>
+    <div class="mono" style="font-size:12px; color:var(--color-driftwood); text-transform:uppercase; margin-bottom:4px;">Grievance &amp; Issue Resolution</div>
+    <h1>{{dashboardTitle}}</h1>
+    <p class="page-subtitle">{{dashboardSubtitle}}</p>
+  </div>
+  <div style="display:flex; gap:12px; align-items:center;">
+    {{createTicketButton}}
+  </div>
+</div>
+
+<div style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+  <div style="display:flex; gap:8px;">
+    <span class="tag-chip tag-pending">● PENDING ({{pendingCount}})</span>
+    <span class="tag-chip tag-progress">● IN_PROGRESS ({{progressCount}})</span>
+    <span class="tag-chip tag-resolved">● RESOLVED ({{resolvedCount}})</span>
+  </div>
+  <div class="mono" style="font-size:13px; color:var(--color-driftwood);">
+    Total tickets: <strong>{{totalTicketCount}}</strong>
+  </div>
+</div>
+
+<div style="display:flex; flex-direction:column; gap:20px;">
+  {{ticketListHtml}}
+</div>
+
+<!-- Modal: Submit Grievance Ticket -->
+<div class="modal-overlay" id="ticketModal">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3>File Grievance Ticket</h3>
+      <button type="button" class="btn btn-ghost" onclick="closeModal('ticketModal')">&times;</button>
+    </div>
+    <form method="POST" action="/tickets/create">
+      <div class="form-group">
+        <label class="form-label" for="category">Department Category</label>
+        <select id="category" name="category" class="form-select mono" required>
+          <option value="IT">IT Infrastructure &amp; Lab Systems</option>
+          <option value="ELECTRICAL">Electrical &amp; Power Supply</option>
+          <option value="GENERAL_MAINTENANCE">General Facilities &amp; Maintenance</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="subject">Subject / Issue Summary</label>
+        <div class="terminal-input-wrapper">
+          <span class="terminal-prefix">&gt;</span>
+          <input type="text" id="subject" name="subject" class="form-input terminal-input" placeholder="e.g. Projector malfunctioning in Seminar Hall 2" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="description">Detailed Description of the Problem</label>
+        <textarea id="description" name="description" class="form-textarea" placeholder="Provide exact room/bench number, error codes, and symptoms..." required></textarea>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('ticketModal')">Cancel</button>
+        <button type="submit" class="btn btn-amber">Submit Grievance &rarr;</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'flex';
+  }
+  function closeModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  }
+</script>
