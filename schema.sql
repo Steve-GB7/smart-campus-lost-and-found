@@ -35,11 +35,15 @@ CREATE TABLE posts (
     title        VARCHAR(200) NOT NULL,
     description  TEXT         NOT NULL,
     image_path   VARCHAR(500),                   -- optional image file path
+    video_path   VARCHAR(500),                   -- optional video file path
     is_resolved  BOOLEAN DEFAULT FALSE,
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (author_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+-- Safe migration for existing installations:
+-- ALTER TABLE posts ADD COLUMN IF NOT EXISTS video_path VARCHAR(500) NULL AFTER image_path;
 
 -- ────────────────────────────────────────────────────────────
 -- 3. PRIVATE MESSAGES  (linked to a post)

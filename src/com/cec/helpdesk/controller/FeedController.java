@@ -20,8 +20,13 @@ public class FeedController {
      */
     public Post createPost(int authorId, PostType postType, String category,
                            String title, String description, String imagePath) {
+        return createPost(authorId, postType, category, title, description, imagePath, null);
+    }
+
+    public Post createPost(int authorId, PostType postType, String category,
+                           String title, String description, String imagePath, String videoPath) {
         try {
-            Post post = new Post(authorId, postType, category, title, description, imagePath);
+            Post post = new Post(authorId, postType, category, title, description, imagePath, videoPath);
             return feedService.createPost(post);
         } catch (Exception e) {
             System.err.println("Error creating post: " + e.getMessage());

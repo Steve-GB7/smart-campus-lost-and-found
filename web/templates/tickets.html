@@ -1,6 +1,8 @@
 <div class="page-header">
   <div>
-    <div class="mono" style="font-size:12px; color:var(--color-driftwood); text-transform:uppercase; margin-bottom:4px;">Grievance &amp; Issue Resolution</div>
+    <div class="section-label">
+      <span>🛠️</span> Grievance &amp; Issue Resolution
+    </div>
     <h1>{{dashboardTitle}}</h1>
     <p class="page-subtitle">{{dashboardSubtitle}}</p>
   </div>
@@ -9,14 +11,14 @@
   </div>
 </div>
 
-<div style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-  <div style="display:flex; gap:8px;">
+<div style="margin-bottom:28px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
     <span class="tag-chip tag-pending">● PENDING ({{pendingCount}})</span>
     <span class="tag-chip tag-progress">● IN_PROGRESS ({{progressCount}})</span>
     <span class="tag-chip tag-resolved">● RESOLVED ({{resolvedCount}})</span>
   </div>
-  <div class="mono" style="font-size:13px; color:var(--color-driftwood);">
-    Total tickets: <strong>{{totalTicketCount}}</strong>
+  <div class="mono" style="font-size:13px; color:var(--color-stone);">
+    Total tickets: <strong style="color:var(--color-charcoal);">{{totalTicketCount}}</strong>
   </div>
 </div>
 
@@ -28,13 +30,16 @@
 <div class="modal-overlay" id="ticketModal">
   <div class="modal-dialog">
     <div class="modal-header">
-      <h3>File Grievance Ticket</h3>
-      <button type="button" class="btn btn-ghost" onclick="closeModal('ticketModal')">&times;</button>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="avatar-mark mark-coral mark-sm">⚡</span>
+        <h3 style="margin:0;">File Grievance Ticket</h3>
+      </div>
+      <button type="button" class="btn btn-ghost" onclick="closeModal('ticketModal')" style="font-size:20px; line-height:1; padding:4px 8px;">&times;</button>
     </div>
     <form method="POST" action="/tickets/create">
       <div class="form-group">
         <label class="form-label" for="category">Department Category</label>
-        <select id="category" name="category" class="form-select mono" required>
+        <select id="category" name="category" class="form-select" required>
           <option value="IT">IT Infrastructure &amp; Lab Systems</option>
           <option value="ELECTRICAL">Electrical &amp; Power Supply</option>
           <option value="GENERAL_MAINTENANCE">General Facilities &amp; Maintenance</option>

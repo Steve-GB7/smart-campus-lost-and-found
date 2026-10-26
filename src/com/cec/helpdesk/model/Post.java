@@ -17,6 +17,7 @@ public class Post {
     private String title;
     private String description;
     private String imagePath;       // optional
+    private String videoPath;       // optional video upload
     private boolean resolved;
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -30,12 +31,18 @@ public class Post {
 
     public Post(int authorId, PostType postType, String category,
                 String title, String description, String imagePath) {
+        this(authorId, postType, category, title, description, imagePath, null);
+    }
+
+    public Post(int authorId, PostType postType, String category,
+                String title, String description, String imagePath, String videoPath) {
         this.authorId    = authorId;
         this.postType    = postType;
         this.category    = category;
         this.title       = title;
         this.description = description;
         this.imagePath   = imagePath;
+        this.videoPath   = videoPath;
         this.resolved    = false;
     }
 
@@ -60,6 +67,9 @@ public class Post {
 
     public String getImagePath()                  { return imagePath; }
     public void setImagePath(String imagePath)    { this.imagePath = imagePath; }
+
+    public String getVideoPath()                  { return videoPath; }
+    public void setVideoPath(String videoPath)    { this.videoPath = videoPath; }
 
     public boolean isResolved()                   { return resolved; }
     public void setResolved(boolean resolved)     { this.resolved = resolved; }

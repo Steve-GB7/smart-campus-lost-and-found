@@ -5,26 +5,31 @@ A full-featured Java Web Application built with strict **Object-Oriented Program
 
 ---
 
-## 🎨 Design System: "Warm Parchment Atelier"
+## 🎨 Design System: "Notion — Warm Paper Notebook Under Afternoon Sun"
 
-- **Theme:** Light, editorial, flat. Cream canvas + ink text + single ember-orange accent for inline links/emphasis (never a button fill).
-- **Surfaces & Cards:** Flat surfaces only, `#f2f1ed` bone cards with 24px padding, 1px hairline border, and a soft dual-layer warm shadow.
+- **Theme:** Light, tactile paper warmth.
+- **Canvas & Surfaces:**
+  - Page canvas: `#f6f5f4` (`--color-paper-warmth`)
+  - Content cards: `#ffffff` (`--color-pure-white`) with 12px corners, 24px padding, and 1px hairline border (`rgba(0, 0, 0, 0.08)`) — zero shadows for a ruled Moleskine feel.
+  - Accent surfaces: Marigold (`#ffb110`), Coral (`#f64932`), Sky Wash (`#62aef0`), Midnight (`#02093a`).
 - **Typography:**
-  - **Headings:** Inter / system-ui, weight 400 ONLY (never bold), progressive tightening letter-spacing (`0.01em` at 14px → `-0.005em` at 22px → `-0.02em` at 36px → `-0.03em` at 72px).
-  - **Editorial Prose:** EB Garamond (Google Font), 16–19px, line-height 1.45.
-  - **Metadata & IDs:** Monospace (JetBrains Mono / ui-monospace / Consolas), 12–13px.
-- **Buttons (Strict 2-filled max):**
-  - **Primary:** `#26251e` background, `#f7f7f4` text, 4px radius (e.g. Sign In, Post Notice).
-  - **Secondary:** `#e6e5e0` background, `#26251e` text, 4px radius (e.g. Filter buttons, Cancel).
-  - **Ghost:** Transparent background, ink at 60% opacity with underline on hover.
-  - **Amber:** `#c08532` in-product action buttons (e.g. Submit Grievance, Update Status, Send Message).
-- **Tags & Status Chips:**
-  - `tag-lost`: Crimson border & text (`#cf2d56`)
-  - `tag-found`: Forest border & text (`#34785c`)
-  - `tag-pending`: Crimson border & text (`#cf2d56`)
-  - `tag-progress`: Amber border & text (`#c08532`)
-  - `tag-resolved`: Forest border & text (`#34785c`)
-- **Inputs:** Terminal-style inputs with `>` prefix prompt and monospace styling.
+  - Primary UI & Headings: Inter (`--font-notioninter`), weight 400 for body, 500 for nav/UI, 600-700 for display headings with tight negative letter-spacing (-0.242px to -2.016px).
+  - Editorial Prose & Subtitles: Source Serif 4 / Lyon Text (`--font-lyon-text`) at 17–18px.
+  - Metadata & Timestamps: Monospace (JetBrains Mono), 12px.
+- **Buttons (Strict Single Chromatic Commitment):**
+  - **Primary CTA:** Notion Blue (`#0075de`) background, `#ffffff` text, 8px radius, padding 6px 15px.
+  - **Ghost CTA / Secondary:** Sky Tint (`#e6f3fe`) background, `#0075de` text, 8px radius.
+  - **Ghost Text Button:** Transparent background, ink black at 95% alpha, hover background `rgba(0, 0, 0, 0.05)`.
+  - **Outlined Text Button:** Transparent background, `rgba(0, 0, 0, 0.12)` border, 8px radius.
+- **Pill Tags & Status Chips:**
+  - 9999px pill radius, comfortable padding:
+  - `tag-lost` / `tag-pending`: Soft coral tint (`#fff0ed`, text `#cf2d14`)
+  - `tag-found` / `tag-resolved`: Soft forest tint (`#edf8f2`, text `#1e7e4e`)
+  - `tag-progress`: Soft marigold/amber tint (`#fff8e6`, text `#b37300`)
+- **Signature Notion Devices:**
+  - Hero Highlight Pills (`.highlight-pill.pill-peach`, `.pill-marigold`, `.pill-sky`) wrapping verbs.
+  - Illustrated Avatar Character Marks (`.avatar-mark`) with 2px accent borders.
+  - Sticky nav with 60px height and subtle elevation shadow (`var(--shadow-nav)`).
 
 ---
 

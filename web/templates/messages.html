@@ -1,7 +1,9 @@
 <div class="page-header">
   <div>
-    <div class="mono" style="font-size:12px; color:var(--color-driftwood); text-transform:uppercase; margin-bottom:4px;">Direct Communication</div>
-    <h1>Private Messages</h1>
+    <div class="section-label">
+      <span>💬</span> Direct Communication
+    </div>
+    <h1>Private <span class="highlight-pill pill-marigold">Messages</span></h1>
     <p class="page-subtitle">Coordinate returns and follow-ups securely with notice authors.</p>
   </div>
 </div>
@@ -9,8 +11,9 @@
 <div class="messaging-layout">
   <!-- Thread sidebar -->
   <aside class="thread-list">
-    <div style="padding:16px; border-bottom:var(--border-hairline); background-color:var(--color-linen);">
-      <span class="mono" style="font-size:11px; text-transform:uppercase; color:var(--color-ash); font-weight:500;">Inbox Conversations</span>
+    <div style="padding:14px 16px; border-bottom:var(--border-hairline); background-color:var(--color-paper-warmth); display:flex; align-items:center; gap:8px;">
+      <span style="font-size:14px;">📬</span>
+      <span style="font-size:12px; font-weight:600; text-transform:uppercase; color:var(--color-stone); letter-spacing:0.04em;">Inbox Conversations</span>
     </div>
     <div>
       {{threadListHtml}}
@@ -20,9 +23,12 @@
   <!-- Active conversation pane -->
   <section class="chat-pane">
     <div class="chat-header">
-      <div>
-        <h4 style="margin:0; font-size:16px;">{{activeChatTitle}}</h4>
-        <span class="mono" style="font-size:12px; color:var(--color-driftwood);">{{activeChatSubtitle}}</span>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="avatar-mark mark-sky mark-sm">👤</div>
+        <div>
+          <h4 style="margin:0; font-size:16px; font-weight:600;">{{activeChatTitle}}</h4>
+          <span class="mono" style="font-size:12px; color:var(--color-stone);">{{activeChatSubtitle}}</span>
+        </div>
       </div>
       <div>
         {{activeChatBadge}}

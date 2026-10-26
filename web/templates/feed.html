@@ -1,7 +1,9 @@
 <div class="page-header">
   <div>
-    <div class="mono" style="font-size:12px; color:var(--color-driftwood); text-transform:uppercase; margin-bottom:4px;">Campus Public Bulletin</div>
-    <h1>Lost &amp; Found Feed</h1>
+    <div class="section-label">
+      <span>📌</span> Campus Public Bulletin
+    </div>
+    <h1>Lost &amp; <span class="highlight-pill pill-peach">Found</span> Bulletin</h1>
     <p class="page-subtitle">Track, report, and recover personal belongings across the CEC campus.</p>
   </div>
   <div style="display:flex; gap:12px; align-items:center;">
@@ -9,14 +11,14 @@
   </div>
 </div>
 
-<div style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+<div class="filter-bar" style="margin-bottom:28px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
   <div style="display:flex; gap:8px;">
     <a href="/feed" class="btn btn-secondary {{filterAllActive}}">All Items</a>
     <a href="/feed?type=LOST" class="btn btn-secondary {{filterLostActive}}"><span class="tag-chip tag-lost">LOST</span> Only</a>
     <a href="/feed?type=FOUND" class="btn btn-secondary {{filterFoundActive}}"><span class="tag-chip tag-found">FOUND</span> Only</a>
   </div>
-  <div class="mono" style="font-size:13px; color:var(--color-driftwood);">
-    Total records: <strong>{{postCount}}</strong>
+  <div class="mono" style="font-size:13px; color:var(--color-stone);">
+    Total records: <strong style="color:var(--color-charcoal);">{{postCount}}</strong>
   </div>
 </div>
 
@@ -24,17 +26,20 @@
   {{cardsHtml}}
 </div>
 
-<!-- Modal: Post Notice (Modal reserved 8px border-radius) -->
+<!-- Modal: Post Notice -->
 <div class="modal-overlay" id="postModal">
   <div class="modal-dialog">
     <div class="modal-header">
-      <h3>Create Campus Notice</h3>
-      <button type="button" class="btn btn-ghost" onclick="closeModal('postModal')">&times;</button>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="avatar-mark mark-sky mark-sm">📝</span>
+        <h3 style="margin:0;">Create Campus Notice</h3>
+      </div>
+      <button type="button" class="btn btn-ghost" onclick="closeModal('postModal')" style="font-size:20px; line-height:1; padding:4px 8px;">&times;</button>
     </div>
-    <form method="POST" action="/feed/create">
+    <form method="POST" action="/feed/create" enctype="multipart/form-data" id="noticeForm" onsubmit="return validateNoticeForm()">
       <div class="form-group">
         <label class="form-label" for="postType">Notice Type</label>
-        <select id="postType" name="postType" class="form-select mono" required>
+        <select id="postType" name="postType" class="form-select" required>
           <option value="LOST">LOST — I misplaced an item</option>
           <option value="FOUND">FOUND — I discovered an item</option>
         </select>
@@ -42,7 +47,7 @@
 
       <div class="form-group">
         <label class="form-label" for="category">Category</label>
-        <select id="category" name="category" class="form-select mono" required>
+        <select id="category" name="category" class="form-select" required>
           <option value="Electronics">Electronics (Laptop, Phone, Charger, Calculator)</option>
           <option value="ID Card & Documents">ID Card &amp; Academic Documents</option>
           <option value="Keys & Wallets">Keys, Wallets &amp; Badges</option>
@@ -73,6 +78,22 @@
         </div>
       </div>
 
+      <div class="form-group">
+        <label class="form-label" for="videoFile">Video (Optional)</label>
+        <div>
+          <input type="file" id="videoFile" name="videoFile" accept="video/mp4,video/webm,video/quicktime" class="form-input" style="padding:6px 10px; font-size:13px;" onchange="handleVideoSelect(this)">
+          <div id="videoFileInfo" style="display:none; margin-top:8px; padding:6px 12px; background:var(--color-paper-warmth); border:var(--border-hairline); border-radius:var(--radius-buttons); align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span>🎬</span>
+              <span id="videoFileName" class="mono" style="font-size:12px; color:var(--color-ink-black); font-weight:500;"></span>
+              <span id="videoFileSize" class="mono" style="font-size:11px; color:var(--color-stone);"></span>
+            </div>
+            <a href="javascript:void(0)" onclick="clearVideoInput()" class="mono" style="font-size:12px; color:var(--color-coral); text-decoration:none; font-weight:500;">Remove</a>
+          </div>
+          <div id="videoErrorMsg" style="display:none; color:var(--color-coral); font-size:12px; margin-top:6px; font-weight:500;"></div>
+        </div>
+      </div>
+
       <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
         <button type="button" class="btn btn-secondary" onclick="closeModal('postModal')">Cancel</button>
         <button type="submit" class="btn btn-primary">Publish Notice &rarr;</button>
@@ -89,5 +110,76 @@
   function closeModal(id) {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
+  }
+
+  function handleVideoSelect(input) {
+    const errorEl = document.getElementById('videoErrorMsg');
+    const infoEl = document.getElementById('videoFileInfo');
+    const nameEl = document.getElementById('videoFileName');
+    const sizeEl = document.getElementById('videoFileSize');
+    errorEl.style.display = 'none';
+    errorEl.textContent = '';
+
+    if (!input.files || input.files.length === 0) {
+      infoEl.style.display = 'none';
+      return;
+    }
+
+    const file = input.files[0];
+    const allowedExts = ['mp4', 'webm', 'mov'];
+    const parts = file.name.split('.');
+    const ext = parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
+    const maxSize = 50 * 1024 * 1024; // 50 MB
+
+    if (!allowedExts.includes(ext)) {
+      errorEl.textContent = 'Invalid format. Allowed video extensions: .mp4, .webm, .mov';
+      errorEl.style.display = 'block';
+      input.value = '';
+      infoEl.style.display = 'none';
+      return;
+    }
+
+    if (file.size > maxSize) {
+      const mb = (file.size / (1024 * 1024)).toFixed(1);
+      errorEl.textContent = 'Video file exceeds the 50 MB limit (selected: ' + mb + ' MB).';
+      errorEl.style.display = 'block';
+      input.value = '';
+      infoEl.style.display = 'none';
+      return;
+    }
+
+    nameEl.textContent = file.name;
+    const sizeStr = file.size >= 1024 * 1024
+      ? (file.size / (1024 * 1024)).toFixed(2) + ' MB'
+      : (file.size / 1024).toFixed(1) + ' KB';
+    sizeEl.textContent = '(' + sizeStr + ')';
+    infoEl.style.display = 'flex';
+  }
+
+  function clearVideoInput() {
+    const input = document.getElementById('videoFile');
+    if (input) input.value = '';
+    const infoEl = document.getElementById('videoFileInfo');
+    if (infoEl) infoEl.style.display = 'none';
+    const errorEl = document.getElementById('videoErrorMsg');
+    if (errorEl) {
+      errorEl.style.display = 'none';
+      errorEl.textContent = '';
+    }
+  }
+
+  function validateNoticeForm() {
+    const input = document.getElementById('videoFile');
+    if (input && input.files && input.files.length > 0) {
+      const file = input.files[0];
+      const parts = file.name.split('.');
+      const ext = parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
+      const allowedExts = ['mp4', 'webm', 'mov'];
+      if (!allowedExts.includes(ext) || file.size > 50 * 1024 * 1024) {
+        handleVideoSelect(input);
+        return false;
+      }
+    }
+    return true;
   }
 </script>

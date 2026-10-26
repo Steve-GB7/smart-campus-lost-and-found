@@ -1,15 +1,21 @@
 <div class="auth-container">
   <div class="auth-card" style="max-width: 480px;">
     <div class="auth-header">
-      <span class="brand-tile">CEC REGISTRATION</span>
-      <h2>Create Account</h2>
+      <div style="display:flex; justify-content:center; margin-bottom:16px;">
+        <div class="avatar-mark mark-marigold">✍️</div>
+      </div>
+      <span class="brand-tile">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-notion-blue); margin-right:3px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        CEC REGISTRATION
+      </span>
+      <h2>Create <span class="highlight-pill pill-marigold">Account</span></h2>
       <p class="page-subtitle">Join the Smart Campus Helpdesk Network</p>
     </div>
 
     <form method="POST" action="/register">
       <div class="form-group">
         <label class="form-label" for="role">Campus Role</label>
-        <select id="role" name="role" class="form-select mono" onchange="toggleDept(this.value)" required>
+        <select id="role" name="role" class="form-select" onchange="toggleDept(this.value)" required>
           <option value="STUDENT" selected>Student</option>
           <option value="STAFF">Staff / Department Member</option>
           <option value="ADMIN">System Administrator</option>
@@ -18,7 +24,7 @@
 
       <div class="form-group" id="deptGroup" style="display:none;">
         <label class="form-label" for="department">Assigned Department</label>
-        <select id="department" name="department" class="form-select mono">
+        <select id="department" name="department" class="form-select">
           <option value="IT">IT Support</option>
           <option value="ELECTRICAL">Electrical Maintenance</option>
           <option value="GENERAL_MAINTENANCE">General Maintenance</option>
@@ -59,13 +65,13 @@
       </div>
 
       <div style="margin-top:24px;">
-        <button type="submit" class="btn btn-primary" style="width:100%;">Create Account &rarr;</button>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:10px;">Create Account &rarr;</button>
       </div>
     </form>
 
     <div class="auth-footer">
       <span>Already have an account?</span>
-      <a href="/login" style="margin-left:4px;">Sign in here</a>
+      <a href="/login" style="margin-left:4px; font-weight:500;">Sign in here</a>
     </div>
   </div>
 </div>

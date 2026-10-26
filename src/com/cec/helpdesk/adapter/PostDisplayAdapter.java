@@ -66,6 +66,22 @@ public class PostDisplayAdapter implements DataAdapter<Post> {
             sb.append("  </div>\n");
         }
 
+        if (p.getVideoPath() != null && !p.getVideoPath().trim().isEmpty()) {
+            String vUrl = escape(p.getVideoPath().trim());
+            String mime = "video/mp4";
+            if (vUrl.toLowerCase().endsWith(".webm")) {
+                mime = "video/webm";
+            } else if (vUrl.toLowerCase().endsWith(".mov")) {
+                mime = "video/quicktime";
+            }
+            sb.append("  <div class=\"post-video\" style=\"margin-top:14px;\">\n");
+            sb.append("    <video controls preload=\"metadata\" style=\"max-width:100%; border-radius:12px;\">\n");
+            sb.append("      <source src=\"").append(vUrl).append("\" type=\"").append(mime).append("\">\n");
+            sb.append("      Your browser does not support the video tag.\n");
+            sb.append("    </video>\n");
+            sb.append("  </div>\n");
+        }
+
         sb.append("  <div class=\"card-footer\">\n");
         sb.append("    <div class=\"card-meta\">\n");
         sb.append("      <span>By <strong style=\"font-weight:500; color:var(--color-ink);\">").append(authorStr).append("</strong></span>\n");

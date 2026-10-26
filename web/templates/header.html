@@ -9,13 +9,16 @@
 <body>
   <header class="top-nav">
     <a href="/feed" class="nav-brand">
-      <span class="brand-tile">CEC</span>
+      <span class="brand-tile">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-notion-blue); display:inline-block; vertical-align:middle; margin-right:3px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        CEC
+      </span>
       <span class="brand-title">Campus Helpdesk</span>
     </a>
     <nav>
       <ul class="nav-links">
         <li><a href="/feed" class="nav-link {{activeFeed}}">Lost &amp; Found</a></li>
-        <li><a href="/tickets" class="nav-link {{activeTickets}}">Grievance Tickets</a></li>
+        <li><a href="/tickets" class="nav-link {{activeTickets}}">Grievances</a></li>
         <li><a href="/messages" class="nav-link {{activeMessages}}">Messages</a></li>
         {{userNav}}
       </ul>

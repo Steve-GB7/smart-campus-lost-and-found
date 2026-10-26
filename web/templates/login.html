@@ -1,8 +1,14 @@
 <div class="auth-container">
   <div class="auth-card">
     <div class="auth-header">
-      <span class="brand-tile">CEC HELPDESK</span>
-      <h2>Sign In</h2>
+      <div style="display:flex; justify-content:center; margin-bottom:16px;">
+        <div class="avatar-mark mark-sky">🎓</div>
+      </div>
+      <span class="brand-tile">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-notion-blue); margin-right:3px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        CEC HELPDESK
+      </span>
+      <h2>Sign <span class="highlight-pill pill-peach">In</span></h2>
       <p class="page-subtitle">College of Engineering Chengannur</p>
     </div>
 
@@ -24,20 +30,13 @@
       </div>
 
       <div style="margin-top:24px;">
-        <button type="submit" class="btn btn-primary" style="width:100%;">Authenticate &rarr;</button>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:10px;">Authenticate &rarr;</button>
       </div>
     </form>
 
-    <div class="auth-footer">
+    <div class="auth-footer" style="margin-top:24px;">
       <span>Don't have an account?</span>
-      <a href="/register" style="margin-left:4px;">Register new profile</a>
-    </div>
-
-    <div style="margin-top:20px; padding:12px; background:var(--color-linen); border-radius:var(--radius-default); border:var(--border-hairline);">
-      <div class="mono" style="font-size:11px; text-transform:uppercase; color:var(--color-ash); margin-bottom:4px;">Default Credentials</div>
-      <div class="mono" style="font-size:12px; color:var(--color-driftwood);">
-        admin / admin123
-      </div>
+      <a href="/register" style="margin-left:4px; font-weight:500;">Register new profile</a>
     </div>
   </div>
 </div>

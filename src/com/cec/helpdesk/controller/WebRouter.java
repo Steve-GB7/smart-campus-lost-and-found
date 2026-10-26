@@ -38,7 +38,7 @@ public class WebRouter implements HttpHandler {
         String method = exchange.getRequestMethod().toUpperCase();
 
         try {
-            if (path.startsWith("/static/")) {
+            if (path.startsWith("/static/") || path.startsWith("/uploads/")) {
                 handleStatic(exchange, path);
                 return;
             }
@@ -98,31 +98,86 @@ public class WebRouter implements HttpHandler {
         }
     }
 
-    // ── Static Asset Serving (/static/css/style.css) ───────────
+    // ── Static Asset & Upload Serving (/static/*, /uploads/*) ────
     private void handleStatic(HttpExchange exchange, String path) throws IOException {
-        String relPath = "web" + path;
+        String relPath;
+        if (path.startsWith("/uploads/")) {
+            relPath = path.substring(1); // "uploads/videos/..."
+        } else {
+            relPath = "web" + path;
+        }
+
         File file = new File(relPath);
         if (!file.exists() || file.isDirectory()) {
             exchange.sendResponseHeaders(404, -1);
             return;
         }
 
-        String mime = "text/plain";
-        if (path.endsWith(".css")) mime = "text/css; charset=UTF-8";
-        else if (path.endsWith(".js")) mime = "application/javascript; charset=UTF-8";
-        else if (path.endsWith(".png")) mime = "image/png";
-        else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) mime = "image/jpeg";
-        else if (path.endsWith(".svg")) mime = "image/svg+xml";
+        String mime = "application/octet-stream";
+        String lower = path.toLowerCase();
+        if (lower.endsWith(".css")) mime = "text/css; charset=UTF-8";
+        else if (lower.endsWith(".js")) mime = "application/javascript; charset=UTF-8";
+        else if (lower.endsWith(".png")) mime = "image/png";
+        else if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) mime = "image/jpeg";
+        else if (lower.endsWith(".svg")) mime = "image/svg+xml";
+        else if (lower.endsWith(".mp4")) mime = "video/mp4";
+        else if (lower.endsWith(".webm")) mime = "video/webm";
+        else if (lower.endsWith(".mov")) mime = "video/quicktime";
 
-        byte[] bytes = Files.readAllBytes(file.toPath());
+        long fileLength = file.length();
         exchange.getResponseHeaders().set("Content-Type", mime);
+        exchange.getResponseHeaders().set("Accept-Ranges", "bytes");
+
+        // Range support for smooth video player seeking
+        String rangeHeader = exchange.getRequestHeaders().getFirst("Range");
+        if (rangeHeader != null && rangeHeader.startsWith("bytes=") && (lower.endsWith(".mp4") || lower.endsWith(".webm") || lower.endsWith(".mov"))) {
+            try {
+                String rangeVal = rangeHeader.substring(6).trim();
+                long start = 0;
+                long end = fileLength - 1;
+                int dash = rangeVal.indexOf('-');
+                if (dash != -1) {
+                    String startStr = rangeVal.substring(0, dash).trim();
+                    String endStr = rangeVal.substring(dash + 1).trim();
+                    if (!startStr.isEmpty()) start = Long.parseLong(startStr);
+                    if (!endStr.isEmpty()) end = Long.parseLong(endStr);
+                }
+                if (end >= fileLength) end = fileLength - 1;
+                if (start <= end) {
+                    long contentLength = end - start + 1;
+                    exchange.getResponseHeaders().set("Content-Range", "bytes " + start + "-" + end + "/" + fileLength);
+                    exchange.sendResponseHeaders(206, contentLength);
+                    try (java.io.RandomAccessFile raf = new java.io.RandomAccessFile(file, "r");
+                         OutputStream os = exchange.getResponseBody()) {
+                        raf.seek(start);
+                        byte[] buf = new byte[16384];
+                        long remaining = contentLength;
+                        while (remaining > 0) {
+                            int toRead = (int) Math.min(buf.length, remaining);
+                            int read = raf.read(buf, 0, toRead);
+                            if (read == -1) break;
+                            os.write(buf, 0, read);
+                            remaining -= read;
+                        }
+                    }
+                    return;
+                }
+            } catch (Exception ignored) { }
+        }
+
         if ("HEAD".equalsIgnoreCase(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(200, -1);
             return;
         }
-        exchange.sendResponseHeaders(200, bytes.length);
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(bytes);
+
+        exchange.sendResponseHeaders(200, fileLength);
+        try (java.io.InputStream is = new java.io.FileInputStream(file);
+             OutputStream os = exchange.getResponseBody()) {
+            byte[] buf = new byte[16384];
+            int read;
+            while ((read = is.read(buf)) != -1) {
+                os.write(buf, 0, read);
+            }
         }
     }
 
@@ -270,16 +325,113 @@ public class WebRouter implements HttpHandler {
             return;
         }
 
-        Map<String, String> form = HttpUtils.parseFormData(exchange);
+        HttpUtils.MultipartRequest multipartReq;
+        try {
+            multipartReq = HttpUtils.parseMultipart(exchange);
+        } catch (Exception e) {
+            SessionManager.setFlashError(exchange, "Upload failed: " + e.getMessage());
+            HttpUtils.redirect(exchange, "/feed");
+            return;
+        }
+
+        Map<String, String> form = multipartReq.getFields();
         String postTypeStr = form.get("postType");
         String category = form.get("category");
         String title = form.get("title");
         String description = form.get("description");
         String imagePath = form.get("imagePath");
 
+        String videoPath = null;
+        HttpUtils.UploadedFile videoFile = multipartReq.getFile("videoFile");
+        if (videoFile != null && videoFile.getFilename() != null && !videoFile.getFilename().trim().isEmpty() && videoFile.getSize() > 0) {
+            // Validation 1: Max file size (50 MB)
+            if (videoFile.getSize() > HttpUtils.MAX_FILE_SIZE) {
+                SessionManager.setFlashError(exchange, "Video exceeds the maximum permitted size of 50 MB.");
+                HttpUtils.redirect(exchange, "/feed");
+                return;
+            }
+
+            // Validation 2: File extension
+            String origName = videoFile.getFilename().trim();
+            int dotIdx = origName.lastIndexOf('.');
+            if (dotIdx == -1) {
+                SessionManager.setFlashError(exchange, "Video file missing extension. Allowed formats: .mp4, .webm, .mov");
+                HttpUtils.redirect(exchange, "/feed");
+                return;
+            }
+            String ext = origName.substring(dotIdx).toLowerCase();
+            if (!ext.equals(".mp4") && !ext.equals(".webm") && !ext.equals(".mov")) {
+                SessionManager.setFlashError(exchange, "Invalid video file extension '" + ext + "'. Allowed formats: .mp4, .webm, .mov");
+                HttpUtils.redirect(exchange, "/feed");
+                return;
+            }
+
+            // Validation 3: Content-Type
+            String cType = videoFile.getContentType().toLowerCase();
+            boolean validContentType = cType.equals("video/mp4") ||
+                                       cType.equals("video/webm") ||
+                                       cType.equals("video/quicktime") ||
+                                       cType.equals("application/octet-stream");
+            if (!validContentType && !cType.startsWith("video/")) {
+                SessionManager.setFlashError(exchange, "Invalid video content type: " + videoFile.getContentType());
+                HttpUtils.redirect(exchange, "/feed");
+                return;
+            }
+
+            // Validation 4: Deep Content Inspection (Magic Bytes)
+            byte[] data = videoFile.getData();
+            // Reject Windows PE/DOS executables (starts with 'MZ')
+            if (data.length >= 2 && data[0] == 0x4D && data[1] == 0x5A) {
+                SessionManager.setFlashError(exchange, "File rejected: Executable files (.exe) are prohibited.");
+                HttpUtils.redirect(exchange, "/feed");
+                return;
+            }
+            // Reject ELF binaries (starts with '\x7FELF')
+            if (data.length >= 4 && data[0] == 0x7F && data[1] == 'E' && data[2] == 'L' && data[3] == 'F') {
+                SessionManager.setFlashError(exchange, "File rejected: Binary executables are prohibited.");
+                HttpUtils.redirect(exchange, "/feed");
+                return;
+            }
+
+            // Validate video container signatures
+            boolean validSignature = false;
+            if (ext.equals(".mp4") || ext.equals(".mov")) {
+                // ISOBMFF: box type at offset 4 (ftyp, moov, mdat, free, skip, wide)
+                if (data.length >= 8) {
+                    String boxType = new String(data, 4, 4, java.nio.charset.StandardCharsets.ISO_8859_1);
+                    if ("ftyp".equals(boxType) || "moov".equals(boxType) || "mdat".equals(boxType)
+                            || "free".equals(boxType) || "skip".equals(boxType) || "wide".equals(boxType)) {
+                        validSignature = true;
+                    }
+                }
+            } else if (ext.equals(".webm")) {
+                // EBML header: 0x1A 0x45 0xDF 0xA3
+                if (data.length >= 4 && (data[0] & 0xFF) == 0x1A && (data[1] & 0xFF) == 0x45
+                        && (data[2] & 0xFF) == 0xDF && (data[3] & 0xFF) == 0xA3) {
+                    validSignature = true;
+                }
+            }
+
+            if (!validSignature) {
+                SessionManager.setFlashError(exchange, "Invalid video file: corrupted or unrecognized format signature.");
+                HttpUtils.redirect(exchange, "/feed");
+                return;
+            }
+
+            // Save file with secure UUID filename
+            String safeFilename = UUID.randomUUID().toString() + ext;
+            File uploadDir = new File("uploads/videos");
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+            File dest = new File(uploadDir, safeFilename);
+            Files.write(dest.toPath(), data);
+            videoPath = "/uploads/videos/" + safeFilename;
+        }
+
         PostType postType = "LOST".equalsIgnoreCase(postTypeStr) ? PostType.LOST : PostType.FOUND;
 
-        Post created = feedController.createPost(currentUser.getUserId(), postType, category, title, description, imagePath);
+        Post created = feedController.createPost(currentUser.getUserId(), postType, category, title, description, imagePath, videoPath);
         if (created != null) {
             SessionManager.setFlashSuccess(exchange, "Notice published successfully to the campus feed!");
         } else {

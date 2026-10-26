@@ -40,11 +40,31 @@ public class PostDAO {
         memPosts.put(2, p2);
     }
 
+    private static volatile boolean columnChecked = false;
+    private void ensureVideoColumn() {
+        if (!columnChecked) {
+            synchronized (PostDAO.class) {
+                if (!columnChecked) {
+                    try {
+                        Connection conn = dbManager.getConnection();
+                        if (conn != null && !conn.isClosed()) {
+                            try (Statement stmt = conn.createStatement()) {
+                                stmt.executeUpdate("ALTER TABLE posts ADD COLUMN IF NOT EXISTS video_path VARCHAR(500) NULL AFTER image_path");
+                            } catch (Exception ignored) { }
+                        }
+                    } catch (Exception ignored) { }
+                    columnChecked = true;
+                }
+            }
+        }
+    }
+
     // ── CREATE ──────────────────────────────────────────────
     public Post create(Post post) throws SQLException {
         try {
+            ensureVideoColumn();
             String sql = "INSERT INTO posts (author_id, post_type, category, title, "
-                       + "description, image_path, is_resolved) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                       + "description, image_path, video_path, is_resolved) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement ps = dbManager.getConnection()
                     .prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, post.getAuthorId());
@@ -53,7 +73,8 @@ public class PostDAO {
                 ps.setString(4, post.getTitle());
                 ps.setString(5, post.getDescription());
                 ps.setString(6, post.getImagePath());
-                ps.setBoolean(7, post.isResolved());
+                ps.setString(7, post.getVideoPath());
+                ps.setBoolean(8, post.isResolved());
                 ps.executeUpdate();
 
                 try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -189,6 +210,15 @@ public class PostDAO {
 
     // ── DELETE ──────────────────────────────────────────────
     public void delete(int postId) throws SQLException {
+        Post existing = findById(postId);
+        if (existing != null && existing.getVideoPath() != null) {
+            try {
+                String vPath = existing.getVideoPath();
+                if (vPath.startsWith("/")) vPath = vPath.substring(1);
+                java.io.File vf = new java.io.File(vPath);
+                if (vf.exists()) vf.delete();
+            } catch (Exception ignored) { }
+        }
         try {
             String sql = "DELETE FROM posts WHERE post_id = ?";
             try (PreparedStatement ps = dbManager.getConnection().prepareStatement(sql)) {
@@ -210,6 +240,9 @@ public class PostDAO {
         post.setTitle(rs.getString("title"));
         post.setDescription(rs.getString("description"));
         post.setImagePath(rs.getString("image_path"));
+        try {
+            post.setVideoPath(rs.getString("video_path"));
+        } catch (SQLException ignored) { }
         post.setResolved(rs.getBoolean("is_resolved"));
         post.setCreatedAt(rs.getTimestamp("created_at"));
         post.setUpdatedAt(rs.getTimestamp("updated_at"));
